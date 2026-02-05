@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package riffwire.items.v1;
+
+option go_package = "riffwire/internal/pb/items/v1;itemsv1";
+
+message Item {
+  int32  id   = 1;
+  string name = 2;
+}
+
+message GetItemRequest {
+  int32 id = 1;
+}
+
+message GetItemResponse {
+  Item item = 1;
+}
+
+message ListItemsRequest {}
+
+message ListItemsResponse {
+  repeated Item items = 1;
+}
+
+// ItemsService provides read access to catalog items.
+service ItemsService {
+    // GetItem returns a single item by its ID.
+  rpc GetItem(GetItemRequest) returns (GetItemResponse);
+    // ListItems returns all available items.
+  rpc ListItems(ListItemsRequest) returns (ListItemsResponse);
+}
