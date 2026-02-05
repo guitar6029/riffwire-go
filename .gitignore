@@ -1,0 +1,13 @@
+# Go build output
+/bin/
+/dist/
+*.exe
+*.out
+
+# Editor / OS junk
+.DS_Store
+.idea/
+.vscode/
+
+# Logs
+*.log
