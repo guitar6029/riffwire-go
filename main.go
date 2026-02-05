@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 type Item struct {
@@ -30,6 +32,46 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(v)
+}
+
+func itemsByIDHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		writeErrorJSON(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+	//extract id
+	idStr := strings.TrimPrefix(r.URL.Path, "/items/")
+
+	if len(idStr) == 0 {
+		writeErrorJSON(w, http.StatusBadRequest, "id is empty")
+		return
+	}
+
+	// parse str into int
+	parsedId, err := strconv.Atoi(idStr)
+	if err != nil {
+		writeErrorJSON(w, http.StatusBadRequest, "invalid id")
+		return
+	}
+
+	// helper find id in the items default
+	found := findEntityInArray(parsedId, itemsDefault)
+	if found == nil {
+		writeErrorJSON(w, http.StatusNotFound, "item not found")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, found)
+}
+
+// pass entity id and array
+func findEntityInArray(id int, items []Item) *Item {
+	for i := range items {
+		if items[i].ID == id {
+			return &items[i]
+		}
+	}
+	return nil
 }
 
 func itemsHandler(w http.ResponseWriter, r *http.Request) {
@@ -66,6 +108,7 @@ func main() {
 	http.HandleFunc("/", rootHandler)
 	http.HandleFunc("/health", healthHandler)
 	http.HandleFunc("/items", logger(itemsHandler))
+	http.HandleFunc("/items/", logger(itemsByIDHandler))
 
 	fmt.Println("Starting a server at port 8080")
 
