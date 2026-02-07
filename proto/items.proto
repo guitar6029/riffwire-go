@@ -24,6 +24,8 @@ message ListItemsResponse {
 }
 
 // ItemsService provides read access to catalog items.
+// defines what methods exists
+// what inputs/outputs exists
 service ItemsService {
     // GetItem returns a single item by its ID.
   rpc GetItem(GetItemRequest) returns (GetItemResponse);
