@@ -24,8 +24,6 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 
-	grpcServer.Serve(listener)
-
 	itemsDefault := []models.Item{
 		{ID: 1, Name: "Lamp"},
 		{ID: 2, Name: "Table"},
@@ -36,5 +34,9 @@ func main() {
 	itemsSrv := grpcapi.NewItemsServer(s)
 
 	itemsv1.RegisterItemsServiceServer(grpcServer, itemsSrv)
+
+	if err := grpcServer.Serve(listener); err != nil {
+		log.Fatalf("GRPC SERVE ERR : %v", err)
+	}
 
 }
